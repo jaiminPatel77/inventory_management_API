@@ -10,7 +10,7 @@ public class Medicine {
     @Id
     private String id;
     private String name;
-    private int pack;
+    private String pack;
     private String batchNo;
     private int quantity;
     private double price;
@@ -32,11 +32,11 @@ public class Medicine {
         this.name = name;
     }
 
-    public int getPack() {
+    public String getPack() {
         return pack;
     }
 
-    public void setPack(int pack) {
+    public void setPack(String pack) {
         this.pack = pack;
     }
 

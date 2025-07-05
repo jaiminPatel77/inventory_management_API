@@ -1,11 +1,15 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.BilledMedicine;
 import com.example.demo.model.Medicine;
 import com.example.demo.repository.MedicineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/medicines")
@@ -16,19 +20,26 @@ public class MedicineController {
     private MedicineRepository repository;
 
     @GetMapping
-    public List<Medicine> getAllMedicines() {
-        return repository.findAll();
+    public ResponseEntity<List<Medicine>> getAllMedicines() {
+        return ResponseEntity.ok(repository.findAll());
     }
 
     @PostMapping
-    public Medicine createMedicine(@RequestBody Medicine medicine) {
-        return repository.save(medicine);
+    public ResponseEntity<Medicine> createMedicine(@RequestBody Medicine medicine) {
+        Medicine saved = repository.save(medicine);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteMedicine(@PathVariable String id) {
-        repository.deleteById(id);
+    public ResponseEntity<Void> deleteMedicine(@PathVariable String id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
+
 
     @PutMapping("/{id}")
     public Medicine updateMedicine(@PathVariable String id, @RequestBody Medicine updatedMedicine) {
@@ -45,6 +56,23 @@ public class MedicineController {
             updatedMedicine.setId(id);
             return repository.save(updatedMedicine);
         });
+    }
+
+    @PostMapping("/bill")
+    public ResponseEntity<String> processBill(@RequestBody List<BilledMedicine> billedItems) {
+        for (BilledMedicine item : billedItems) {
+            Optional<Medicine> medOpt = repository.findById(item.getId());
+            if (medOpt.isPresent()) {
+                Medicine med = medOpt.get();
+                int remainingQty = med.getQuantity() - item.getPurchasedQuantity();
+                if (remainingQty < 0) {
+                    return ResponseEntity.badRequest().body("Not enough stock for: " + med.getName());
+                }
+                med.setQuantity(remainingQty);
+                repository.save(med);
+            }
+        }
+        return ResponseEntity.ok("Inventory updated successfully");
     }
 
 }
