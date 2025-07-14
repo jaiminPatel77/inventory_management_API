@@ -2,8 +2,13 @@
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 
-# Copy everything and build with Maven Wrapper
+# Copy everything
 COPY . .
+
+# ✅ Make Maven Wrapper executable
+RUN chmod +x mvnw
+
+# Build using Maven wrapper
 RUN ./mvnw clean package -DskipTests
 
 # ------------ Stage 2: Run the application ------------
