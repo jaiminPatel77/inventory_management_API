@@ -1,4 +1,9 @@
 package com.example.demo.repository;
 
-public class MedicalBillRepository {
+import com.example.demo.model.MedicalBillHistory;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface MedicalBillRepository extends MongoRepository<MedicalBillHistory, String> {
 }
