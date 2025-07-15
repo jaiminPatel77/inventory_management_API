@@ -1,0 +1,11 @@
+com\example\demo\DemoApplication.class
+com\example\demo\service\MedicineService.class
+com\example\demo\model\MedicalBillHistory.class
+com\example\demo\repository\MedicineReferenceRepository.class
+com\example\demo\controller\MedicineReferenceUploadController.class
+com\example\demo\repository\MedicalBillRepository.class
+com\example\demo\model\BilledMedicine.class
+com\example\demo\model\Medicine.class
+com\example\demo\controller\MedicineController.class
+com\example\demo\model\MedicineReference.class
+com\example\demo\repository\MedicineRepository.class
