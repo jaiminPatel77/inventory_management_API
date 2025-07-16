@@ -1,14 +1,16 @@
-# Build stage
-FROM eclipse-temurin:21-jdk AS build
+# Use Java 21 base image
+FROM eclipse-temurin:21-jdk
+
+# Set working directory inside the container
 WORKDIR /app
 
-COPY . .
-RUN chmod +x mvnw
-RUN ./mvnw clean package -DskipTests
+# Copy Maven build file and source code
+COPY pom.xml ./
+COPY src ./src
 
-# Runtime stage
-FROM eclipse-temurin:21-jre
-WORKDIR /app
-COPY --from=build /app/target/demo-0.0.1-SNAPSHOT.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Install Maven and build the project (skipping tests)
+RUN apt-get update && apt-get install -y maven && \
+    mvn clean install -DskipTests
+
+# Run the built JAR
+CMD ["java", "-jar", "target/demo-0.0.1-SNAPSHOT.jar"]
